@@ -1,0 +1,5 @@
+# Don't check in IntelliJ files
+/.idea/
+
+# Ensure we don't accidentally check in any service key files!
+/allocation/configuration.json
