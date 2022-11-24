@@ -1,1 +1,0 @@
-This file is here to ensure that the BigQuery cache directory is correctly created when you check this code out.

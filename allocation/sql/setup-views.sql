@@ -1,11 +1,25 @@
+########################################################################################################################
+#
+# Setup the views used by the notebook with sample data, and scores explained in the blog.
+#
+# Note: the intention for this script was to run it directly from the notebook - but if you just want to run the SQL
+# directly in BigQuery, perform a search and replace in this file for the <project-id>.<dataset-id> variables and
+# replace with your own dataset. I.e.
+#
+# {project_id}.{dataset_id}
+# mv-santas-helper.santas_helper
+#
+# The project and BigQuery dataset will need to already exist!
+#
+########################################################################################################################
 
 -- ### Children ###
-CREATE OR REPLACE VIEW `mv-santas-helper.santas_helper.child`
+CREATE OR REPLACE VIEW `{project_id}.{dataset_id}.child`
 OPTIONS (
   description='All the naughty and nice children and what they would and wouldn\'t like for xmas'
 ) AS
 WITH children AS (
-  SELECT * 
+  SELECT *
   FROM UNNEST([
     STRUCT(1 AS id, 'Adrian' AS name, ARRAY<STRING>['SERVERLESS', 'DEV_OPS'] AS wish_present_type, ARRAY<STRING>['SALES', 'TYPESCRIPT'] AS dislike_present_type, 2 AS number_of_presents, FALSE AS naughty)
     , (2, 'Alex', ['GCP', 'AWS'], NULL, 3, FALSE) -- Note: Alex is very accommodating and will take on any job
@@ -18,14 +32,14 @@ WITH children AS (
     , (9, 'Rob', NULL,  ARRAY<STRING>['DATABASE'], 2, FALSE)
     , (10, 'Sean', ['NODE', 'REACT', 'DATABASE'], NULL, 1, FALSE)
     , (11, 'Willis', ['SALES'], NULL, 2, FALSE)
-  ]) 
+  ])
 )
 SELECT *
 FROM children
 ORDER BY id;
 
 -- ### Presents ###
-CREATE OR REPLACE VIEW `mv-santas-helper.santas_helper.present`
+CREATE OR REPLACE VIEW `{project_id}.{dataset_id}.present`
 OPTIONS (
   description='All the presents the elves have been making all year'
 ) AS
@@ -56,7 +70,7 @@ FROM presents
 ORDER BY id;
 
 -- ### Children/Presents ###
-CREATE OR REPLACE VIEW `mv-santas-helper.santas_helper.child_present`
+CREATE OR REPLACE VIEW `{project_id}.{dataset_id}.child_present`
 OPTIONS (
   description='All possible combinations of children and presents'
 ) AS
@@ -71,12 +85,12 @@ SELECT c.id AS child_id
 , p.value AS present_value
 , p.present_types AS present_types
 , p.stock_level AS present_stock_levels
-FROM `mv-santas-helper.santas_helper.child` AS c
-CROSS JOIN `mv-santas-helper.santas_helper.present` AS p
+FROM `{project_id}.{dataset_id}.child` AS c
+CROSS JOIN `{project_id}.{dataset_id}.present` AS p
 ORDER BY c.id, p.id;
 
 --- ### Child/Present - dislike score ###
-CREATE OR REPLACE VIEW `mv-santas-helper.santas_helper.child_present_dislike_score`
+CREATE OR REPLACE VIEW `{project_id}.{dataset_id}.child_present_dislike_score`
 OPTIONS (
   description='Negative scores for any presents that the children said they didn\'t like'
 ) AS
@@ -86,7 +100,7 @@ SELECT cp.child_id
 , STRING_AGG(DISTINCT pt) AS present_types
 , COUNTIF(DISTINCT cdlpt IN UNNEST(cp.present_types)) AS dislike_match_count
 , -9999999 * COUNTIF(DISTINCT cdlpt IN UNNEST(cp.present_types)) AS dislike_score
-FROM `mv-santas-helper.santas_helper.child_present` AS cp
+FROM `{project_id}.{dataset_id}.child_present` AS cp
 LEFT JOIN UNNEST(cp.child_dislike_present_type) AS cdlpt
 LEFT JOIN UNNEST(cp.present_types) AS pt
 GROUP BY cp.child_id
@@ -95,9 +109,9 @@ ORDER BY cp.child_id
 , cp.present_id;
 
 --- ### Child/Present - wish score ###
-CREATE OR REPLACE VIEW `mv-santas-helper.santas_helper.child_present_wish_score`
+CREATE OR REPLACE VIEW `{project_id}.{dataset_id}.child_present_wish_score`
 OPTIONS (
-  description='Postive scores for any presents that the children wished for'
+  description='Positive scores for any presents that the children wished for'
 ) AS
 SELECT cp.child_id
 , cp.present_id
@@ -105,7 +119,7 @@ SELECT cp.child_id
 , STRING_AGG(DISTINCT pt) AS present_types
 , COUNTIF(DISTINCT cwpt IN UNNEST(cp.present_types)) AS wish_match_count
 , 10 * COUNTIF(DISTINCT cwpt IN UNNEST(cp.present_types)) AS wish_score
-FROM `mv-santas-helper.santas_helper.child_present` AS cp
+FROM `{project_id}.{dataset_id}.child_present` AS cp
 LEFT JOIN UNNEST(cp.child_wish_present_type) AS cwpt
 LEFT JOIN UNNEST(cp.present_types) AS pt
 GROUP BY cp.child_id
@@ -114,46 +128,46 @@ ORDER BY cp.child_id
 , cp.present_id;
 
 --- ### Child/Present - present count ###
-CREATE OR REPLACE VIEW `mv-santas-helper.santas_helper.child_present_count`
+CREATE OR REPLACE VIEW `{project_id}.{dataset_id}.child_present_count`
 OPTIONS (
   description='The max amount of presents a child could potentially have if they have 1 of every present available'
 ) AS
 SELECT cp.child_id
 , COUNT(cp.present_id) AS present_count
-FROM `mv-santas-helper.santas_helper.child_present` AS cp
+FROM `{project_id}.{dataset_id}.child_present` AS cp
 GROUP BY cp.child_id
 ORDER BY cp.child_id;
 
 --- ### Child/Present - value count ###
-CREATE OR REPLACE VIEW `mv-santas-helper.santas_helper.child_present_value_count`
+CREATE OR REPLACE VIEW `{project_id}.{dataset_id}.child_present_value_count`
 OPTIONS (
   description='The count of value presents (high/medium/low) for each child'
 ) AS
 SELECT cp.child_id
 , cp.present_value
 , COUNT(cp.present_id) AS present_count
-FROM `mv-santas-helper.santas_helper.child_present` AS cp
+FROM `{project_id}.{dataset_id}.child_present` AS cp
 GROUP BY cp.child_id
 , cp.present_value
 ORDER BY cp.child_id
 , cp.present_value;
 
 --- ### Child/Present - value score ###
-CREATE OR REPLACE VIEW `mv-santas-helper.santas_helper.child_present_value_score`
+CREATE OR REPLACE VIEW `{project_id}.{dataset_id}.child_present_value_score`
 OPTIONS (
   description='The score for present for each child based on the value'
 ) AS
-SELECT cpc.child_id 
+SELECT cpc.child_id
 , cpc.present_count AS child_present_count
 , cpvc.present_value
 , cpvc.present_count AS present_value_count
-, cpc.present_count / cpvc.present_count AS present_value_score
-FROM `mv-santas-helper.santas_helper.child_present_count` AS cpc
-LEFT JOIN `mv-santas-helper.santas_helper.child_present_value_count` AS cpvc ON cpc.child_id = cpvc.child_id
+, 10 * cpvc.present_count / cpc.present_count AS present_diversity_score
+FROM `{project_id}.{dataset_id}.child_present_count` AS cpc
+LEFT JOIN `{project_id}.{dataset_id}.child_present_value_count` AS cpvc ON cpc.child_id = cpvc.child_id
 ORDER BY cpc.child_id;
 
 --- ### Child/Present - value score ###
-CREATE OR REPLACE VIEW `mv-santas-helper.santas_helper.child_present_score`
+CREATE OR REPLACE VIEW `{project_id}.{dataset_id}.child_present_score`
 OPTIONS (
   description='The business rule scores and total score for the child/present combination'
 ) AS
@@ -168,7 +182,7 @@ WITH child_present_scores AS (
   , cpws.present_types
   , COALESCE(cpds.dislike_score, 0) AS br_excl_present_dislike_score
   , COALESCE(cpws.wish_score, 0) AS br_weight_present_wish_score
-  , COALESCE(cpvs.present_value_score, 0) AS br_weight_present_diversity_score
+  , COALESCE(cpvs.present_diversity_score, 0) AS br_weight_present_diversity_score
   , CASE
       WHEN cpvs.present_value IS NULL OR TRIM(cpvs.present_value) = '' THEN 0
       ELSE
@@ -179,14 +193,14 @@ WITH child_present_scores AS (
         ELSE 0
       END
     END AS br_weight_product_value_score
-  FROM `mv-santas-helper.santas_helper.child_present` AS cp
-  LEFT JOIN `mv-santas-helper.santas_helper.child_present_dislike_score` AS cpds
+  FROM `{project_id}.{dataset_id}.child_present` AS cp
+  LEFT JOIN `{project_id}.{dataset_id}.child_present_dislike_score` AS cpds
     ON cp.child_id = cpds.child_id
     AND cp.present_id = cpds.present_id
-  LEFT JOIN `mv-santas-helper.santas_helper.child_present_wish_score` AS cpws
+  LEFT JOIN `{project_id}.{dataset_id}.child_present_wish_score` AS cpws
     ON cp.child_id = cpws.child_id
     AND cp.present_id = cpws.present_id
-  LEFT JOIN `mv-santas-helper.santas_helper.child_present_value_score` AS cpvs
+  LEFT JOIN `{project_id}.{dataset_id}.child_present_value_score` AS cpvs
     ON cp.child_id = cpvs.child_id
     AND cp.present_value = cpvs.present_value
 )
@@ -194,6 +208,7 @@ SELECT *
 , (br_excl_present_dislike_score + br_weight_present_wish_score + br_weight_present_diversity_score + br_weight_product_value_score) AS score
 FROM child_present_scores
 ORDER BY child_id
+, score DESC
 , present_id;
 
 
