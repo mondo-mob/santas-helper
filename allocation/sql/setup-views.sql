@@ -13,6 +13,7 @@
 #
 ########################################################################################################################
 
+
 ###### Children ########################################################################################################
 # Example using UNNEST & STRUCT to generate sample data
 # A child has the following present categories to choose from:
@@ -29,9 +30,9 @@ WITH children AS (
   FROM UNNEST([
     STRUCT(1 AS id, 'Adrian' AS name, ARRAY<STRING>['ACTION_FIGURES', 'CRAFTS'] AS wish_present_type, ARRAY<STRING>['REMOTE_CONTROL', 'MODELS'] AS dislike_present_type, 2 AS number_of_presents, FALSE AS naughty)
     , (2, 'Alex', ['DOLLS', 'EDUCATIONAL'], NULL, 3, FALSE)
-    , (3, 'Glenn', NULL,  ARRAY<STRING>['TECHNOLOGY'], 2, FALSE)
+    , (3, 'Glenn', NULL,  ARRAY<STRING>['TECHNOLOGY'], 2, TRUE)
     , (4, 'Karin', NULL, NULL, 3, FALSE)
-    , (5, 'Marc', ['CRAFTS', 'BUILDING', 'DOLLS'],  ARRAY<STRING>['EDUCATIONAL', 'TECHNOLOGY'], 1, TRUE)
+    , (5, 'Marc', ['CRAFTS', 'BUILDING', 'DOLLS'],  ARRAY<STRING>['EDUCATIONAL', 'TECHNOLOGY'], 1, FALSE)
     , (6, 'Martin', ['SPORTS', 'ACTION_FIGURES'], NULL, 2, FALSE)
     , (7, 'Matt', ['DOLLS'], NULL, 3, FALSE)
     , (8, 'Pete', ['EDUCATIONAL', 'TECHNOLOGY'], NULL, 1, FALSE)
@@ -43,6 +44,7 @@ WITH children AS (
 SELECT *
 FROM children
 ORDER BY id;
+
 
 ###### Presents ########################################################################################################
 # Alternative example using UNION ALL to generate sample data and achieve the same effect as UNNEST & STRUCT
@@ -79,7 +81,10 @@ SELECT *
 FROM presents
 ORDER BY id;
 
--- ### Children/Presents ###
+
+###### Children/Presents ###############################################################################################
+# Every combination possible of Children and Presents
+########################################################################################################################
 CREATE OR REPLACE VIEW `{project_id}.{dataset_id}.child_present`
 OPTIONS (
   description='All possible combinations of children and presents'
@@ -99,7 +104,23 @@ FROM `{project_id}.{dataset_id}.child` AS c
 CROSS JOIN `{project_id}.{dataset_id}.present` AS p
 ORDER BY c.id, p.id;
 
---- ### Child/Present - dislike score ###
+
+###### Child/Present - dislike score ###################################################################################
+# To summarise what is going on in this SQL:
+#
+# - We start with all the child/present combinations (the child_present view).
+# - We then join on all the child dislikes. We can think of the UNNEST syntax as effectively converting the array of
+#   children dislikes and converting them into a separate table to join to.
+# - Similarly, we join to the all the present types, again using the UNNEST syntax.
+# - In order to use SQL aggregate functions, we need to GROUP the data. We want the original combinations of children
+#   and presents, so we group on the child and present ids respectively.
+# - The selection of the child and present ids are for reference. Similarly, the STRING_AGG function groups the array
+#   that we split up into a comma separated string - we can use this later to verify the logic has worked correctly.
+# - The dislike_match_count is used to count how many matches of our disliked present categories there are in the
+#   current present category - again, used for reference.
+# - The dislike_score uses the same logic, but multiples this count by a large negative number (-9999999) - the more
+#   matches, the larger the number - although a single count will ensure the child never receives the present.
+########################################################################################################################
 CREATE OR REPLACE VIEW `{project_id}.{dataset_id}.child_present_dislike_score`
 OPTIONS (
   description='Negative scores for any presents that the children said they didn\'t like'
