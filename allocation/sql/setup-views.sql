@@ -13,7 +13,13 @@
 #
 ########################################################################################################################
 
--- ### Children ###
+###### Children ########################################################################################################
+# Example using UNNEST & STRUCT to generate sample data
+# A child has the following present categories to choose from:
+# ACTION_FIGURES, CRAFTS, BUILDING, DOLLS, EDUCATIONAL, TECHNOLOGY, PUZZLES, SOFT_TOYS, MODELS, SPORTS, REMOTE_CONTROL
+# They can choose 1 or more of the categories for both their wish and dislike present types.
+# Leaving a category NULL means they don't have a particular wish/dislike
+########################################################################################################################
 CREATE OR REPLACE VIEW `{project_id}.{dataset_id}.child`
 OPTIONS (
   description='All the naughty and nice children and what they would and wouldn\'t like for xmas'
@@ -21,49 +27,53 @@ OPTIONS (
 WITH children AS (
   SELECT *
   FROM UNNEST([
-    STRUCT(1 AS id, 'Adrian' AS name, ARRAY<STRING>['SERVERLESS', 'DEV_OPS'] AS wish_present_type, ARRAY<STRING>['SALES', 'TYPESCRIPT'] AS dislike_present_type, 2 AS number_of_presents, FALSE AS naughty)
-    , (2, 'Alex', ['GCP', 'AWS'], NULL, 3, FALSE) -- Note: Alex is very accommodating and will take on any job
-    , (3, 'Glenn', NULL,  ARRAY<STRING>['AZURE'], 2, FALSE) -- Note: Glenn doesn't care what present he gets! No preferences
-    , (4, 'Karin', NULL, NULL, 3, FALSE) -- Note: Karin is meh! Whatever!
-    , (5, 'Marc', ['DEV_OPS', 'KUBERNETES', 'GCP'],  ARRAY<STRING>['AWS', 'AZURE'], 1, TRUE)
-    , (6, 'Martin', ['DATABASE', 'SERVERLESS'], NULL, 2, FALSE)
-    , (7, 'Matt', ['GCP'], NULL, 3, FALSE)
-    , (8, 'Pete', ['AWS', 'AZURE'], NULL, 1, FALSE)
-    , (9, 'Rob', NULL,  ARRAY<STRING>['DATABASE'], 2, FALSE)
-    , (10, 'Sean', ['NODE', 'REACT', 'DATABASE'], NULL, 1, FALSE)
-    , (11, 'Willis', ['SALES'], NULL, 2, FALSE)
+    STRUCT(1 AS id, 'Adrian' AS name, ARRAY<STRING>['ACTION_FIGURES', 'CRAFTS'] AS wish_present_type, ARRAY<STRING>['REMOTE_CONTROL', 'MODELS'] AS dislike_present_type, 2 AS number_of_presents, FALSE AS naughty)
+    , (2, 'Alex', ['DOLLS', 'EDUCATIONAL'], NULL, 3, FALSE)
+    , (3, 'Glenn', NULL,  ARRAY<STRING>['TECHNOLOGY'], 2, FALSE)
+    , (4, 'Karin', NULL, NULL, 3, FALSE)
+    , (5, 'Marc', ['CRAFTS', 'BUILDING', 'DOLLS'],  ARRAY<STRING>['EDUCATIONAL', 'TECHNOLOGY'], 1, TRUE)
+    , (6, 'Martin', ['SPORTS', 'ACTION_FIGURES'], NULL, 2, FALSE)
+    , (7, 'Matt', ['DOLLS'], NULL, 3, FALSE)
+    , (8, 'Pete', ['EDUCATIONAL', 'TECHNOLOGY'], NULL, 1, FALSE)
+    , (9, 'Rob', NULL,  ARRAY<STRING>['SPORTS'], 2, FALSE)
+    , (10, 'Sean', ['SOFT_TOYS', 'PUZZLES', 'SPORTS'], NULL, 1, FALSE)
+    , (11, 'Willis', ['REMOTE_CONTROL'], NULL, 2, FALSE)
   ])
 )
 SELECT *
 FROM children
 ORDER BY id;
 
--- ### Presents ###
+###### Presents ########################################################################################################
+# Alternative example using UNION ALL to generate sample data and achieve the same effect as UNNEST & STRUCT
+# A present can be 1 or more of the same categories used for the children wish/dislike lists:
+# ACTION_FIGURES, CRAFTS, BUILDING, DOLLS, EDUCATIONAL, TECHNOLOGY, PUZZLES, SOFT_TOYS, MODELS, SPORTS, REMOTE_CONTROL
+########################################################################################################################
 CREATE OR REPLACE VIEW `{project_id}.{dataset_id}.present`
 OPTIONS (
-  description='All the presents the elves have been making all year'
+  description='Inventory of the presents the Elves have been making all year'
 ) AS
 WITH presents AS (
-  SELECT 1 AS id, 'Job #1' AS description, 'High' AS value, ARRAY<STRING>['AWS', 'DEV_OPS', 'KUBERNETES'] AS present_types, 1 AS stock_level UNION ALL
-  SELECT 2 AS id, 'Job #2' AS description, 'Low' AS value, ARRAY<STRING>['GCP', 'SERVERLESS'] AS present_types, 3 AS stock_level UNION ALL
-  SELECT 3 AS id, 'Job #3' AS description, 'High' AS value, ARRAY<STRING>['AWS', 'DEV_OPS', 'DATABASE'] AS present_types, 2 AS stock_level UNION ALL
-  SELECT 4 AS id, 'Job #4' AS description, 'Medium' AS value, ARRAY<STRING>['AZURE', 'SERVERLESS'] AS present_types, 3 AS stock_level UNION ALL
-  SELECT 5 AS id, 'Job #5' AS description, 'Low' AS value, ARRAY<STRING>['NODE', 'TYPESCRIPT'] AS present_types, 2 AS stock_level UNION ALL
-  SELECT 6 AS id, 'Job #6' AS description, 'High' AS value, ARRAY<STRING>['NODE'] AS present_types, 4 AS stock_level UNION ALL
-  SELECT 7 AS id, 'Job #7' AS description, 'High' AS value, ARRAY<STRING>['SALES'] AS present_types, 1 AS stock_level UNION ALL
-  SELECT 8 AS id, 'Job #8' AS description, 'Low' AS value, ARRAY<STRING>['KUBERNETES', 'SERVERLESS'] AS present_types, 2 AS stock_level UNION ALL
-  SELECT 9 AS id, 'Job #9' AS description, 'Medium' AS value, ARRAY<STRING>['AZURE', 'SALES', 'DEV_OPS'] AS present_types, 1 AS stock_level UNION ALL
-  SELECT 10 AS id, 'Job #10' AS description, 'High' AS value, ARRAY<STRING>['SERVERLESS'] AS present_types, 3 AS stock_level UNION ALL
-  SELECT 11 AS id, 'Job #11' AS description, 'High' AS value, ARRAY<STRING>['DEV_OPS'] AS present_types, 2 AS stock_level UNION ALL
-  SELECT 12 AS id, 'Job #12' AS description, 'Low' AS value, ARRAY<STRING>['TYPESCRIPT', 'REACT', 'NODE'] AS present_types, 1 AS stock_level UNION ALL
-  SELECT 13 AS id, 'Job #13' AS description, 'Low' AS value, ARRAY<STRING>['DATABASE'] AS present_types, 3 AS stock_level UNION ALL
-  SELECT 14 AS id, 'Job #14' AS description, 'Medium' AS value, ARRAY<STRING>['SALES'] AS present_types, 4 AS stock_level UNION ALL
-  SELECT 15 AS id, 'Job #15' AS description, 'High' AS value, ARRAY<STRING>['GCP', 'AWS'] AS present_types, 2 AS stock_level UNION ALL
-  SELECT 16 AS id, 'Job #16' AS description, 'Low' AS value, ARRAY<STRING>['AZURE', 'DATABASE'] AS present_types, 1 AS stock_level UNION ALL
-  SELECT 17 AS id, 'Job #17' AS description, 'High' AS value, ARRAY<STRING>['AWS'] AS present_types, 2 AS stock_level UNION ALL
-  SELECT 18 AS id, 'Job #18' AS description, 'Medium' AS value, ARRAY<STRING>['REACT'] AS present_types, 3 AS stock_level UNION ALL
-  SELECT 19 AS id, 'Job #19' AS description, 'High' AS value, ARRAY<STRING>['AZURE'] AS present_types, 1 AS stock_level UNION ALL
-  SELECT 20 AS id, 'Job #20' AS description, 'Low' AS value, ARRAY<STRING>['SALES', 'REACT'] AS present_types, 2 AS stock_level
+  SELECT 1 AS id, 'Present #1' AS description, 'High' AS value, ARRAY<STRING>['EDUCATIONAL', 'CRAFTS', 'BUILDING'] AS present_types, 1 AS stock_level UNION ALL
+  SELECT 2 AS id, 'Present #2' AS description, 'Low' AS value, ARRAY<STRING>['DOLLS', 'ACTION_FIGURES'] AS present_types, 3 AS stock_level UNION ALL
+  SELECT 3 AS id, 'Present #3' AS description, 'High' AS value, ARRAY<STRING>['EDUCATIONAL', 'CRAFTS', 'SPORTS'] AS present_types, 2 AS stock_level UNION ALL
+  SELECT 4 AS id, 'Present #4' AS description, 'Medium' AS value, ARRAY<STRING>['TECHNOLOGY', 'ACTION_FIGURES'] AS present_types, 3 AS stock_level UNION ALL
+  SELECT 5 AS id, 'Present #5' AS description, 'Low' AS value, ARRAY<STRING>['SOFT_TOYS', 'MODELS'] AS present_types, 2 AS stock_level UNION ALL
+  SELECT 6 AS id, 'Present #6' AS description, 'High' AS value, ARRAY<STRING>['SOFT_TOYS'] AS present_types, 4 AS stock_level UNION ALL
+  SELECT 7 AS id, 'Present #7' AS description, 'High' AS value, ARRAY<STRING>['REMOTE_CONTROL'] AS present_types, 1 AS stock_level UNION ALL
+  SELECT 8 AS id, 'Present #8' AS description, 'Low' AS value, ARRAY<STRING>['BUILDING', 'ACTION_FIGURES'] AS present_types, 2 AS stock_level UNION ALL
+  SELECT 9 AS id, 'Present #9' AS description, 'Medium' AS value, ARRAY<STRING>['TECHNOLOGY', 'REMOTE_CONTROL', 'CRAFTS'] AS present_types, 1 AS stock_level UNION ALL
+  SELECT 10 AS id, 'Present #10' AS description, 'High' AS value, ARRAY<STRING>['ACTION_FIGURES'] AS present_types, 3 AS stock_level UNION ALL
+  SELECT 11 AS id, 'Present #11' AS description, 'High' AS value, ARRAY<STRING>['CRAFTS'] AS present_types, 2 AS stock_level UNION ALL
+  SELECT 12 AS id, 'Present #12' AS description, 'Low' AS value, ARRAY<STRING>['MODELS', 'PUZZLES', 'SOFT_TOYS'] AS present_types, 1 AS stock_level UNION ALL
+  SELECT 13 AS id, 'Present #13' AS description, 'Low' AS value, ARRAY<STRING>['SPORTS'] AS present_types, 3 AS stock_level UNION ALL
+  SELECT 14 AS id, 'Present #14' AS description, 'Medium' AS value, ARRAY<STRING>['REMOTE_CONTROL'] AS present_types, 4 AS stock_level UNION ALL
+  SELECT 15 AS id, 'Present #15' AS description, 'High' AS value, ARRAY<STRING>['DOLLS', 'EDUCATIONAL'] AS present_types, 2 AS stock_level UNION ALL
+  SELECT 16 AS id, 'Present #16' AS description, 'Low' AS value, ARRAY<STRING>['TECHNOLOGY', 'SPORTS'] AS present_types, 1 AS stock_level UNION ALL
+  SELECT 17 AS id, 'Present #17' AS description, 'High' AS value, ARRAY<STRING>['EDUCATIONAL'] AS present_types, 2 AS stock_level UNION ALL
+  SELECT 18 AS id, 'Present #18' AS description, 'Medium' AS value, ARRAY<STRING>['PUZZLES'] AS present_types, 3 AS stock_level UNION ALL
+  SELECT 19 AS id, 'Present #19' AS description, 'High' AS value, ARRAY<STRING>['TECHNOLOGY'] AS present_types, 1 AS stock_level UNION ALL
+  SELECT 20 AS id, 'Present #20' AS description, 'Low' AS value, ARRAY<STRING>['REMOTE_CONTROL', 'PUZZLES'] AS present_types, 2 AS stock_level
 )
 SELECT *
 FROM presents
