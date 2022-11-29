@@ -205,6 +205,7 @@ OPTIONS (
 WITH child_present_scores AS (
   SELECT cp.child_id
   , cp.child_name
+  , cp.child_naughty
   , cpds.child_dislike_present_types
   , cpws.child_wish_present_types
   , cp.present_id
