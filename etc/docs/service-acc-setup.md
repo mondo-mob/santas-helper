@@ -2,7 +2,7 @@
 
 A [Service Account](https://cloud.google.com/iam/docs/service-accounts) - which is a special type of account used by 
 machines, rather than humans - is required by the Jupyter Notebook in order to access BigQuery. We will need to create 
-this account, assign it the correct permission(s), the provide a way that the python code in the notebook can 
+this account, assign it the correct permission(s), then provide a way that the python code in the notebook can 
 access it.
 
 ## Create Service Account
@@ -33,24 +33,27 @@ selected `JSON` as the key type.
 
 ![Create Key](images/09-service-acc-create-key.png)
 
-Download the key (you can only do this once, so don't loose it).
+Download the key (you can only do this once, so don't lose it).
 
 ![Download Key](images/10-service-acc-download.png)
 
 You will need to rename this key to `configuration.json` and place this in the same directory as the 
-`SantasHelper.ipynb` notebook - but his is explained in more detail in the [Running the Notebook](running-the-notebook.md) 
-section.
+`SantasHelper.ipynb` notebook - but this is explained in more detail in the 
+[Running the Notebook](running-the-notebook.md) section.
 
 ## IAM Setup
 
 We now need to give the Service Account access to BigQuery. We need to write to BigQuery (to setup the data/views) as 
 well as read (to allocate the presents using the scores). The simplest way to do this is to assign a single 
-role `BigQuery Admin`. I.e.
+role `BigQuery Admin`. 
+
+Navigate back to the `IAM and admin` -> `IAM` screen, then apply the role to the service 
+account as follows. I.e.
 
 ![IAM Role Setup](images/11-service-acc-iam.png)
 
-Note: we chose the full name of the service account (the name after the `@` symbol is determined by youre project id - so 
-for this example, we use `santas-helper-service-account@mv-santas-helper.iam.gserviceaccount.com`).
+Note: we chose the full name of the service account (the name after the `@` symbol is determined by your project id - 
+so for this example, we use `santas-helper-service-account@mv-santas-helper.iam.gserviceaccount.com`).
 
 Now when we review the IAM permissions for our project, we should see something similar to:
 
