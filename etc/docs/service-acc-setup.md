@@ -38,7 +38,8 @@ Download the key (you can only do this once, so don't loose it).
 ![Download Key](images/10-service-acc-download.png)
 
 You will need to rename this key to `configuration.json` and place this in the same directory as the 
-`SantasHelper.ipynb` notebook - but his is explained in more detail in a later section.
+`SantasHelper.ipynb` notebook - but his is explained in more detail in the [Running the Notebook](running-the-notebook.md) 
+section.
 
 ## IAM Setup
 
