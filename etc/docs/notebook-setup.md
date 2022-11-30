@@ -41,7 +41,7 @@ When you click on the `OPEN JUPYTERLAB` you will be taken to the following start
 
 However, before you can use the Notebook for this demonstration, there are a few more setup steps required.
 
-- Next - [Service Account Setup]()
+- Next - [Service Account Setup](service-acc-setup.md)
 
 
 
