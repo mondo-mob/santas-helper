@@ -33,5 +33,7 @@ order they should be executed.
 - [Notebook Setup](etc/docs/notebook-setup.md) - Setting up the managed Jupyter Notebook in GCP
 - [Service Account Setup](etc/docs/service-acc-setup.md) - Setting up the GCP Service Account - required by the 
   Jupyter Notebook to create and access the data in BigQuery.
-- [BigQuery Setup](etc/docs/bigquery-setup.md) - Initialising BigQuery for use by the Notebook
+- [BigQuery Setup](etc/docs/bigquery-setup.md) - Initialising BigQuery for use by the Notebook - specifically creating 
+  a dataset.
+- [Running the Notebook](etc/docs/running-the-notebook.md)
 
