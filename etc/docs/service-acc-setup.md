@@ -57,4 +57,4 @@ Now when we review the IAM permissions for our project, we should see something 
 
 We now need a few steps to setup BigQuery for this demo.
 
-- Next - [BigQuery Setup](service-acc-setup.md)
+- Next - [BigQuery Setup](bigquery-setup.md)
