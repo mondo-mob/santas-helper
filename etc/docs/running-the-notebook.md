@@ -7,7 +7,7 @@ using the `OPEN JUPYTERLAB` button. From the default homepage, select `Terminal`
 
 ## Checkout code
 
-This is a public repo is stored in Github. To bypass firewalls etc, use `https` rather than `ssh` to `clone` 
+This is a public repo residing in GitHub. To bypass firewalls etc, use `https` rather than `ssh` to `clone` 
 the repository. I.e.
 
 ![Open Terminal](images/17-jupyter-clone-repo.png)
@@ -18,11 +18,7 @@ The command used at the root of the terminal is:
 git clone https://github.com/mondo-mob/santas-helper.git
 ```
 
-Note the following: 
-
-- `git` is already installed on the notebook machine.
-- In the example, this repository was private - so credentials were required in order to clone the code. You will 
-  not need to perform this authentication step
+*Note: `git` is already installed on the notebook machine.*
 
 ## File structure
 
@@ -30,7 +26,7 @@ Once cloned, this will create the directory `santas-helper` at the root. Close t
 this root to see the files. The directory structure is as follows:
 
 - `santas-helper`
-  - `etc` - documentation, image etc
+  - `etc` - documentation, images etc
   - `allocation` - where the allocation logic, code etc resides.
     - `sql` - contains any SQL scripts - in this case [setup-views.sql](../../allocation/sql/setup-views.sql)
 
