@@ -1,3 +1,5 @@
+![Mondo Ventures Logo](etc/docs/images/mondo-logo-reverse.png)
+
 # Santa's Helper
 
 This is the companion code for the [Santa's Helper](https://docs.google.com/document/d/16in8wS8Vl2UvQOYwDxwge8FPpDANxWRkxi4IcCMBa8o/edit#) 
