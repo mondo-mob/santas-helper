@@ -37,5 +37,5 @@ order they should be executed.
   Jupyter Notebook to create and access the data in BigQuery.
 - [BigQuery Setup](etc/docs/bigquery-setup.md) - Initialising BigQuery for use by the Notebook - specifically creating 
   a dataset.
-- [Running the Notebook](etc/docs/running-the-notebook.md)
+- [Running the Notebook](etc/docs/running-the-notebook.md) - working through the algorithm and allocating presents.
 
