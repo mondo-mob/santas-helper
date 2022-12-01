@@ -1,4 +1,4 @@
-![Mondo Ventures Logo](etc/docs/images/mondo-logo-reverse.png)
+![Mondo Ventures Intro](etc/docs/images/mondo-post-202212-Santas-helper.jpg)
 
 # Santa's Helper
 

@@ -81,5 +81,7 @@ majority of the cells will also produce output to demonstrate what is going on.
 
 Happy Allocating, and Merry Christmas from the Mondo Team! x
 
+![Mondo Ventures Intro](images/mondo-post-202212-Santas-helper-thats-a-wrap.jpg)
+
 
 
