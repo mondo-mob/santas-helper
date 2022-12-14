@@ -2,7 +2,7 @@
 
 # Santa's Helper
 
-This is the companion code for the [Santa's Helper](https://docs.google.com/document/d/16in8wS8Vl2UvQOYwDxwge8FPpDANxWRkxi4IcCMBa8o/edit#) 
+This is the companion code for the [Santa's Helper](https://medium.com/@marc_at_mondo/santas-helper-7eca86c64e14) 
 blog. The blog explains what the code is trying to do, but focuses on the logic output - rather than the "how to". 
 This code is the "how to".
 
